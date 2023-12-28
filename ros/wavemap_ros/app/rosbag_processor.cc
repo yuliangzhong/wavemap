@@ -8,6 +8,9 @@
 #include "wavemap_ros/input_handler/pointcloud_input_handler.h"
 #include "wavemap_ros/wavemap_server.h"
 
+#include <wavemap_io/file_conversions.h>
+#include <typeinfo>
+
 using namespace wavemap;  // NOLINT
 int main(int argc, char** argv) {
   ros::init(argc, argv, "wavemap_rosbag_processor");
@@ -24,8 +27,9 @@ int main(int argc, char** argv) {
   WavemapServer wavemap_server(nh, nh_private);
 
   // Read the required ROS params
-  std::string rosbag_paths_str;
+  std::string rosbag_paths_str, map_path_str;
   nh_private.param("rosbag_path", rosbag_paths_str, rosbag_paths_str);
+  nh_private.param("map_path", map_path_str, map_path_str);
   std::string input_pointcloud_republishing_topic;
 
   // Create the rosbag processor and load the rosbags
@@ -80,6 +84,10 @@ int main(int argc, char** argv) {
 
   wavemap_server.getMap()->prune();
   wavemap_server.publishMap();
+
+  // Save the map
+  std::cout<< "saving a map of " << typeid(*wavemap_server.getMap()).name() << " to " << map_path_str << std::endl;
+  wavemap::io::mapToFile(*wavemap_server.getMap(), map_path_str);
 
   if (nh_private.param("keep_alive", false)) {
     ros::spin();
