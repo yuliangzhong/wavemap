@@ -67,7 +67,7 @@ class HashedChunkedWaveletIntegrator : public ProjectiveIntegrator {
       bool& block_needs_thresholding);
   void updateLeavesBatch(
       const OctreeIndex& parent_index, FloatingPoint& parent_value,
-      HashedChunkedWaveletOctreeBlock::NodeChunkType::DataType& parent_details);
+      HashedChunkedWaveletOctreeBlock::NodeChunkType::DataType& parent_details, float eps);
 };
 }  // namespace wavemap
 

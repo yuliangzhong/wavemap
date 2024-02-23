@@ -39,7 +39,7 @@ inline void HashedChunkedWaveletIntegrator::recursiveTester(  // NOLINT
 
 inline void HashedChunkedWaveletIntegrator::updateLeavesBatch(
     const OctreeIndex& parent_index, FloatingPoint& parent_value,
-    HaarCoefficients<FloatingPoint, 3>::Details& parent_details) {
+    HaarCoefficients<FloatingPoint, 3>::Details& parent_details, float eps) {
   // Decompress
   auto child_values = HashedChunkedWaveletOctreeBlock::Transform::backward(
       {parent_value, parent_details});
@@ -60,9 +60,12 @@ inline void HashedChunkedWaveletIntegrator::updateLeavesBatch(
 
   // Compute updated values
   for (int child_idx = 0; child_idx < OctreeIndex::kNumChildren; ++child_idx) {
-    const FloatingPoint sample = computeUpdate(child_centers.col(child_idx));
     FloatingPoint& child_value = child_values[child_idx];
-    child_value = sample + child_value;
+    if (std::abs(child_value) < eps)
+    {
+      const FloatingPoint sample = computeUpdate(child_centers.col(child_idx));
+      child_value = sample + child_value;
+    }
   }
 
   // Threshold

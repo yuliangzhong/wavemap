@@ -3,7 +3,7 @@
 #include <stack>
 
 #include <tracy/Tracy.hpp>
-
+#include <iostream>
 namespace wavemap {
 void HashedChunkedWaveletIntegrator::updateMap() {
   ZoneScoped;
@@ -121,23 +121,23 @@ void HashedChunkedWaveletIntegrator::updateNodeRecursive(  // NOLINT
 
     // Test if the worst-case error for the intersection type at the current
     // resolution falls within the acceptable approximation error
-    const FloatingPoint child_width = W_child_aabb.width<0>();
-    const Point3D W_child_center =
-        W_child_aabb.min + Vector3D::Constant(child_width / 2.f);
-    const Point3D C_child_center =
-        posed_range_image_->getPoseInverse() * W_child_center;
-    const FloatingPoint d_C_child =
-        projection_model_->cartesianToSensorZ(C_child_center);
-    const FloatingPoint bounding_sphere_radius =
-        kUnitCubeHalfDiagonal * child_width;
-    if (measurement_model_->computeWorstCaseApproximationError(
-            update_type, d_C_child, bounding_sphere_radius) <
-        config_.termination_update_error) {
-      const FloatingPoint sample = computeUpdate(C_child_center);
-      child_value += sample;
-      block_needs_thresholding = true;
-      continue;
-    }
+    // const FloatingPoint child_width = W_child_aabb.width<0>();
+    // const Point3D W_child_center =
+    //     W_child_aabb.min + Vector3D::Constant(child_width / 2.f);
+    // const Point3D C_child_center =
+    //     posed_range_image_->getPoseInverse() * W_child_center;
+    // const FloatingPoint d_C_child =
+    //     projection_model_->cartesianToSensorZ(C_child_center);
+    // const FloatingPoint bounding_sphere_radius =
+    //     kUnitCubeHalfDiagonal * child_width;
+    // if (measurement_model_->computeWorstCaseApproximationError(
+    //         update_type, d_C_child, bounding_sphere_radius) <
+    //     config_.termination_update_error) {
+    //   const FloatingPoint sample = computeUpdate(C_child_center);
+    //   child_value += sample;
+    //   block_needs_thresholding = true;
+    //   continue;
+    // }
 
     // Since the approximation error would still be too big, refine
     const MortonIndex morton_code = convert::nodeIndexToMorton(child_index);
@@ -169,7 +169,7 @@ void HashedChunkedWaveletIntegrator::updateNodeRecursive(  // NOLINT
 
     // If we're at the leaf level, directly compute the update
     if (child_height == config_.termination_height + 1) {
-      updateLeavesBatch(child_index, child_value, child_details);
+      updateLeavesBatch(child_index, child_value, child_details, config_.termination_update_error);
     } else {
       // Otherwise, recurse
       DCHECK_GE(child_height, 0);
