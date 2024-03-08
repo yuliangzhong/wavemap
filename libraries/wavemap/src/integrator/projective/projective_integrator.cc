@@ -70,7 +70,7 @@ void ProjectiveIntegrator::importPointcloud(
     const FloatingPoint range = sensor_coordinates.depth;
     const FloatingPoint old_range_value =
         posed_range_image_->at(range_image_index);
-    if (old_range_value < config_.min_range || range < old_range_value) {
+    if (old_range_value == 0 || range < old_range_value) {
       posed_range_image_->at(range_image_index) = range;
       beam_offset_image_->at(range_image_index) = beam_to_pixel_offset;
     }
