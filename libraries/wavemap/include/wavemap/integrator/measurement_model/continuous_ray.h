@@ -73,7 +73,7 @@ class ContinuousRay : public MeasurementModelBase {
   const Image<>::ConstPtr range_image_;
 
   const FloatingPoint range_threshold_front_ = 3.f * config_.range_sigma;
-  const FloatingPoint range_threshold_back_ = 6.f * config_.range_sigma;
+  const FloatingPoint range_threshold_back_ = 3.f * config_.range_sigma;
   // NOTE: The upper range thresholds has a width of 6 sigmas because the
   //       assumed 'ground truth' surface thickness is 3 sigma, and the range
   //       uncertainty extends the non-zero regions with another 3 sigma.

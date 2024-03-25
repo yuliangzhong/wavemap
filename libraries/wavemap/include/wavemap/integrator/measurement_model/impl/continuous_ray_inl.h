@@ -70,8 +70,10 @@ inline FloatingPoint ContinuousRay::computeBeamUpdate(
 inline FloatingPoint ContinuousRay::computeFullBeamUpdate(
     FloatingPoint cell_to_sensor_distance,
     FloatingPoint measured_distance) const {
-  const FloatingPoint f =
+  const FloatingPoint f_init =
       (cell_to_sensor_distance - measured_distance) / config_.range_sigma;
+  const FloatingPoint f = f_init + (f_init + 3.f) / 3.f;
+  
   const FloatingPoint range_contrib =
       ApproximateGaussianDistribution::cumulative(f) -
       0.5f * ApproximateGaussianDistribution::cumulative(f - 3.f) - 0.5f;
